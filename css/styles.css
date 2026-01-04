@@ -60,6 +60,9 @@ h4 {
   gap: 10px;
   margin: 10px 0 10px;
 }
+.ridge-controls {
+  margin: 6px 0 10px;
+}
 .control {
   border: 1px solid #e5e7eb;
   border-radius: 10px;

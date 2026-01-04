@@ -66,55 +66,6 @@
             </div>
           </div>
 
-          <div class="control">
-            <div class="row">
-              <div>
-                <label for="ridgeMode">Ridgeline view</label>
-                <div class="muted" style="font-size: 12px">
-                  Show weekday or weekend
-                </div>
-              </div>
-              <div style="min-width: 170px; flex: 1 1 170px">
-                <select id="ridgeMode">
-                  <option value="weekday" selected>Weekday</option>
-                  <option value="weekend">Weekend</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="control">
-            <div class="row">
-              <div>
-                <label for="ridgeBin">Ridgeline bin (hours)</label>
-                <div class="muted" style="font-size: 12px">
-                  1 = hourly, default 4
-                </div>
-              </div>
-              <div style="min-width: 90px; flex: 0 0 90px">
-                <input id="ridgeBin" type="number" min="1" max="12" step="1" value="4" />
-              </div>
-            </div>
-          </div>
-
-          <div class="control">
-            <div class="row">
-              <div>
-                <label for="compareToggle">Ridgeline comparison</label>
-                <div class="muted" style="font-size: 12px">
-                  Overlay lowest-risk sensor
-                </div>
-              </div>
-              <div>
-                <input id="compareToggle" type="checkbox" />
-              </div>
-            </div>
-            <div
-              id="compareNote"
-              class="muted"
-              style="font-size: 12px; margin-top: 6px"
-            ></div>
-          </div>
         </div>
 
         <div class="legend">
@@ -137,6 +88,64 @@
                 <div class="small">Toggle weekday/weekend for selected sensor</div>
               </div>
               <div class="small">Ridgeline</div>
+            </div>
+            <div class="controls ridge-controls">
+              <div class="control">
+                <div class="row">
+                  <div>
+                    <label for="ridgeMode">Ridgeline view</label>
+                    <div class="muted" style="font-size: 12px">
+                      Show weekday or weekend
+                    </div>
+                  </div>
+                  <div style="min-width: 170px; flex: 1 1 170px">
+                    <select id="ridgeMode">
+                      <option value="weekday" selected>Weekday</option>
+                      <option value="weekend">Weekend</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="control">
+                <div class="row">
+                  <div>
+                    <label for="ridgeBin">Ridgeline bin (hours)</label>
+                    <div class="muted" style="font-size: 12px">
+                      1 = hourly, default 4
+                    </div>
+                  </div>
+                  <div style="min-width: 90px; flex: 0 0 90px">
+                    <input
+                      id="ridgeBin"
+                      type="number"
+                      min="1"
+                      max="12"
+                      step="1"
+                      value="4"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="control">
+                <div class="row">
+                  <div>
+                    <label for="compareToggle">Ridgeline comparison</label>
+                    <div class="muted" style="font-size: 12px">
+                      Overlay lowest-risk sensor
+                    </div>
+                  </div>
+                  <div>
+                    <input id="compareToggle" type="checkbox" />
+                  </div>
+                </div>
+                <div
+                  id="compareNote"
+                  class="muted"
+                  style="font-size: 12px; margin-top: 6px"
+                ></div>
+              </div>
             </div>
             <div id="ridgeline"></div>
             <div id="ridgelineMeta" class="chartmeta muted"></div>
