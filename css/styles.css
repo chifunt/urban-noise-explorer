@@ -1,0 +1,186 @@
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+#app {
+  display: flex;
+  height: 100vh;
+}
+#map {
+  flex: 1 1 65%;
+}
+#panel {
+  flex: 1 1 35%;
+  border-left: 1px solid #e5e7eb;
+  padding: 12px 12px 16px;
+  overflow: auto;
+}
+
+h3,
+h4 {
+  margin: 0 0 8px;
+}
+.muted {
+  color: #6b7280;
+}
+.legend {
+  margin: 10px 0 12px;
+}
+.legend span {
+  display: inline-block;
+  padding: 4px 8px;
+  margin: 0 6px 6px 0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.quiet {
+  background: #d1fae5;
+}
+.moderate {
+  background: #fde68a;
+}
+.loud {
+  background: #fca5a5;
+}
+.very_loud {
+  background: #fb7185;
+}
+.extreme {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 10px;
+}
+.control {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+.control .row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.control label {
+  font-size: 12px;
+  color: #6b7280;
+}
+select,
+input[type="range"] {
+  width: 100%;
+}
+.valuepill {
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: #111;
+  background: #fff;
+}
+
+.kpi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+.card .label {
+  font-size: 12px;
+  color: #6b7280;
+}
+.card .value {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.section {
+  margin-top: 14px;
+}
+.chartwrap {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+.charttitle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.charttitle .small {
+  font-size: 12px;
+  color: #6b7280;
+}
+.chartmeta {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+#ridgeline svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#radial svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.axis text {
+  font-size: 10px;
+  fill: #6b7280;
+}
+.axis path,
+.axis line {
+  stroke: #e5e7eb;
+}
+
+.radialRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.radialCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+}
+.radialCardTitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.badge {
+  font-size: 11px;
+  border: 1px solid #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: #111;
+  background: #fff;
+}
+.samplemeta {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+}

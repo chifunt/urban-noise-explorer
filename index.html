@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Urban Noise Explorer (Prototype)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/vendor/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="map"></div>
+      <div id="panel">
+        <h3>Detail</h3>
+        <p class="muted" style="margin: 0 0 10px">
+          Colors show how often a sensor exceeds the selected threshold within
+          the selected time filter.
+        </p>
+
+        <div class="controls">
+          <div class="control">
+            <div class="row">
+              <div>
+                <label for="threshold">Noise threshold (dB)</label>
+                <div id="thresholdPill" class="valuepill">55 dB</div>
+              </div>
+              <div style="min-width: 170px; flex: 1 1 170px">
+                <select id="threshold">
+                  <option value="50">50</option>
+                  <option value="55" selected>55</option>
+                  <option value="60">60</option>
+                  <option value="65">65</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label for="timeMode">Time filter</label>
+                <div id="timePill" class="valuepill">All hours</div>
+              </div>
+              <div style="min-width: 170px; flex: 1 1 170px">
+                <select id="timeMode">
+                  <option value="all" selected>All hours</option>
+                  <option value="day">Day (07–21)</option>
+                  <option value="night">Night (22–06)</option>
+                  <option value="hour">Specific hour</option>
+                </select>
+              </div>
+            </div>
+            <div id="hourRow" style="margin-top: 10px; display: none">
+              <label for="hourSlider">Hour of day</label>
+              <input
+                id="hourSlider"
+                type="range"
+                min="0"
+                max="23"
+                step="1"
+                value="22"
+              />
+              <div class="muted" style="font-size: 12px; margin-top: 4px">
+                Selected hour: <span id="hourLabel">22</span>:00
+              </div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label for="ridgeMode">Ridgeline view</label>
+                <div class="muted" style="font-size: 12px">
+                  Show weekday or weekend
+                </div>
+              </div>
+              <div style="min-width: 170px; flex: 1 1 170px">
+                <select id="ridgeMode">
+                  <option value="weekday" selected>Weekday</option>
+                  <option value="weekend">Weekend</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label for="ridgeBin">Ridgeline bin (hours)</label>
+                <div class="muted" style="font-size: 12px">
+                  1 = hourly, default 4
+                </div>
+              </div>
+              <div style="min-width: 90px; flex: 0 0 90px">
+                <input id="ridgeBin" type="number" min="1" max="12" step="1" value="4" />
+              </div>
+            </div>
+          </div>
+
+          <div class="control">
+            <div class="row">
+              <div>
+                <label for="compareToggle">Ridgeline comparison</label>
+                <div class="muted" style="font-size: 12px">
+                  Overlay lowest-risk sensor
+                </div>
+              </div>
+              <div>
+                <input id="compareToggle" type="checkbox" />
+              </div>
+            </div>
+            <div
+              id="compareNote"
+              class="muted"
+              style="font-size: 12px; margin-top: 6px"
+            ></div>
+          </div>
+        </div>
+
+        <div class="legend">
+          <span class="quiet">Quiet (&lt;20%)</span>
+          <span class="moderate">Moderate (20–40%)</span>
+          <span class="loud">Loud (40–60%)</span>
+          <span class="very_loud">Very loud (60–80%)</span>
+          <span class="extreme">Extreme (≥80%)</span>
+        </div>
+
+        <div id="detail">
+          <p class="muted">Select a sensor on the map.</p>
+        </div>
+
+        <div class="section">
+          <div class="chartwrap">
+            <div class="charttitle">
+              <div>
+                <strong>Noise distribution by hour</strong>
+                <div class="small">Toggle weekday/weekend for selected sensor</div>
+              </div>
+              <div class="small">Ridgeline</div>
+            </div>
+            <div id="ridgeline"></div>
+            <div id="ridgelineMeta" class="chartmeta muted"></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="chartwrap">
+            <div class="charttitle">
+              <div>
+                <strong>Daily cycle summary</strong>
+                <div class="small">
+                  Median dB per hour (inner = weekday, outer = weekend)
+                </div>
+              </div>
+              <div class="small">Radial</div>
+            </div>
+            <div id="radial"></div>
+            <div id="radialLegend" class="chartmeta muted"></div>
+            <div id="radialMeta" class="chartmeta muted"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/vendor/leaflet/leaflet.js"></script>
+    <script src="js/vendor/d3/d3.v7.min.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>
