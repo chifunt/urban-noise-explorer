@@ -14,7 +14,7 @@ export function renderRidgeline(sensorId, state) {
     : null;
   const compareRecs = compareId ? state.detailsBySensor.get(compareId) || [] : [];
   const ridgeHourBin = currentRidgeBin();
-  const ridgeMode = els.ridgeModeSel ? els.ridgeModeSel.value : "weekday";
+  const ridgeMode = els.ridgeModeSel ? els.ridgeModeSel.value : "both";
   if (recs.length === 0) {
     container.innerHTML = `<p class="muted">No records for this sensor.</p>`;
     if (els.ridgelineMeta) els.ridgelineMeta.textContent = "";
@@ -25,12 +25,7 @@ export function renderRidgeline(sensorId, state) {
   const weekend = recs.filter((r) => r.is_weekend === 1);
   const compareWeekday = compareRecs.filter((r) => r.is_weekend === 0);
   const compareWeekend = compareRecs.filter((r) => r.is_weekend === 1);
-  const primaryRecords = ridgeMode === "weekend" ? weekend : weekday;
-  const comparePrimary = compareRecs.length
-    ? ridgeMode === "weekend"
-      ? compareWeekend
-      : compareWeekday
-    : [];
+  const modes = [ridgeMode];
 
   const width = container.clientWidth || 420;
   const height = 380;
@@ -39,7 +34,8 @@ export function renderRidgeline(sensorId, state) {
   const innerW = width - margin.left - margin.right;
   const innerH = height - margin.top - margin.bottom;
   const panelPad = 18;
-  const rowAreaH = Math.max(1, innerH - panelPad);
+  const panelHeight = innerH / modes.length;
+  const rowAreaH = Math.max(1, panelHeight - panelPad);
   const hourBins = d3.range(0, 24, ridgeHourBin);
   const rowH = rowAreaH / hourBins.length;
 
@@ -78,8 +74,18 @@ export function renderRidgeline(sensorId, state) {
     return result;
   }
 
-  const binsPrimary = buildHourBins(primaryRecords);
-  const binsCompare = comparePrimary.length ? buildHourBins(comparePrimary) : null;
+  const binsByMode = {
+    weekday: buildHourBins(weekday),
+    weekend: buildHourBins(weekend),
+    both: buildHourBins(recs),
+  };
+  const compareBinsByMode = compareRecs.length
+    ? {
+        weekday: buildHourBins(compareWeekday),
+        weekend: buildHourBins(compareWeekend),
+        both: buildHourBins(compareRecs),
+      }
+    : null;
 
   function maxBinCount(binsMap) {
     return (
@@ -91,8 +97,10 @@ export function renderRidgeline(sensorId, state) {
   }
 
   const maxCount = Math.max(
-    maxBinCount(binsPrimary),
-    binsCompare ? maxBinCount(binsCompare) : 0,
+    ...modes.map((mode) => maxBinCount(binsByMode[mode])),
+    ...(compareBinsByMode
+      ? modes.map((mode) => maxBinCount(compareBinsByMode[mode]))
+      : [0]),
   );
 
   const yAmp = d3
@@ -112,6 +120,7 @@ export function renderRidgeline(sensorId, state) {
       .attr("y", yOffset + 10)
       .attr("fill", "#6b7280")
       .attr("font-size", 12)
+      .attr("font-weight", 600)
       .text(title);
 
     g.append("text")
@@ -218,15 +227,24 @@ export function renderRidgeline(sensorId, state) {
     return { panelTop, panelBottom: panelTop + rowAreaH };
   }
 
-  const panelTitle = ridgeMode === "weekend" ? "Weekend" : "Weekday";
-  const panel = drawPanel(panelTitle, binsPrimary, 0, binsCompare);
+  const panels = [];
+  let yOffset = 0;
+  modes.forEach((mode) => {
+    const panelTitle =
+      mode === "both" ? "All days" : mode === "weekend" ? "Weekend" : "Weekday";
+    const compareBins = compareBinsByMode ? compareBinsByMode[mode] : null;
+    panels.push(drawPanel(panelTitle, binsByMode[mode], yOffset, compareBins));
+    yOffset += panelHeight;
+  });
+  const firstPanel = panels[0];
+  const lastPanel = panels[panels.length - 1];
 
   const xThr = x(ridgeThreshold);
   g.append("line")
     .attr("x1", xThr)
     .attr("x2", xThr)
-    .attr("y1", panel.panelTop)
-    .attr("y2", panel.panelBottom)
+    .attr("y1", firstPanel.panelTop)
+    .attr("y2", lastPanel.panelBottom)
     .attr("stroke", "#ef4444")
     .attr("stroke-opacity", 0.35)
     .attr("stroke-width", 1)
@@ -242,7 +260,7 @@ export function renderRidgeline(sensorId, state) {
   const xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
   g.append("g")
     .attr("class", "axis")
-    .attr("transform", `translate(0, ${panel.panelBottom})`)
+    .attr("transform", `translate(0, ${lastPanel.panelBottom})`)
     .call(xAxis);
 
   g.append("text")
@@ -258,14 +276,20 @@ export function renderRidgeline(sensorId, state) {
       ridgeHourBin === 1
         ? "Hourly rows."
         : `Binned in ${ridgeHourBin}-hour blocks.`;
+    const modeLabel =
+      ridgeMode === "both"
+        ? "All days (weekday + weekend)."
+        : ridgeMode === "weekend"
+          ? "Weekend only."
+          : "Weekday only.";
     if (compareEnabled && compareId && compareRecs.length) {
       const compareSensor = state.sensors.find((s) => s.sensor_id === compareId);
       const avg = compareSensor ? compareSensor.avg_db.toFixed(1) : "n/a";
-      els.ridgelineMeta.textContent = `${binLabel} Comparison: Sensor ${compareId} (avg ${avg} dB) shown as dashed outline.`;
+      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison: Sensor ${compareId} (avg ${avg} dB) shown as dashed outline.`;
     } else if (compareEnabled) {
-      els.ridgelineMeta.textContent = `${binLabel} Comparison unavailable.`;
+      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison unavailable.`;
     } else {
-      els.ridgelineMeta.textContent = `${binLabel} Comparison off.`;
+      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison off.`;
     }
   }
 }

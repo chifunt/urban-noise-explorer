@@ -85,7 +85,7 @@
             <div class="charttitle">
               <div>
                 <strong>Noise distribution by hour</strong>
-                <div class="small">Toggle weekday/weekend for selected sensor</div>
+                <div class="small">Toggle weekday/weekend/both for selected sensor</div>
               </div>
               <div class="small">Ridgeline</div>
             </div>
@@ -95,12 +95,13 @@
                   <div>
                     <label for="ridgeMode">Ridgeline view</label>
                     <div class="muted" style="font-size: 12px">
-                      Show weekday or weekend
+                      Show weekday, weekend, or both
                     </div>
                   </div>
                   <div style="min-width: 170px; flex: 1 1 170px">
                     <select id="ridgeMode">
-                      <option value="weekday" selected>Weekday</option>
+                      <option value="both" selected>Both</option>
+                      <option value="weekday">Weekday</option>
                       <option value="weekend">Weekend</option>
                     </select>
                   </div>
