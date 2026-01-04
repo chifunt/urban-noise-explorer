@@ -2,6 +2,8 @@
 
 Interactive prototype for exploring urban noise sensor data with a map, ridgeline, and radial summaries.
 
+Live site: https://chifunt.github.io/urban-noise-explorer/
+
 ## Quick start
 
 Run a local server from the project root:
