@@ -138,7 +138,7 @@ export function renderRidgeline(sensorId, state) {
       .x((d) => x((d.x0 + d.x1) / 2))
       .y0(rowH)
       .y1((d) => rowH - yAmp(d.length))
-      .curve(d3.curveCatmullRom);
+      .curve(d3.curveMonotoneX);
 
     const areaAbove = d3
       .area()
@@ -146,7 +146,7 @@ export function renderRidgeline(sensorId, state) {
       .x((d) => x((d.x0 + d.x1) / 2))
       .y0(rowH)
       .y1((d) => rowH - yAmp(d.length))
-      .curve(d3.curveCatmullRom);
+      .curve(d3.curveMonotoneX);
 
     hourBins.forEach((start) => {
       const binIndex = start / ridgeHourBin;
