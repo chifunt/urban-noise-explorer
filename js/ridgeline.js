@@ -115,12 +115,6 @@ export function renderRidgeline(sensorId, state) {
     .domain([0, maxCount])
     .range([0, rowH * 0.85]);
 
-  function rowFade(total) {
-    if (total < 4) return 0.35;
-    if (total < 8) return 0.6;
-    return 1;
-  }
-
   function drawPanel(title, binsMap, yOffset, compareBinsMap) {
     g.append("text")
       .attr("x", 0)
@@ -140,20 +134,29 @@ export function renderRidgeline(sensorId, state) {
     const panelTop = yOffset + panelPad;
     const panelG = g.append("g").attr("transform", `translate(0, ${panelTop})`);
 
+    function buildStepSeries(bins, minX = null) {
+      const series = [];
+      for (const b of bins) {
+        const x0 = minX === null ? b.x0 : Math.max(b.x0, minX);
+        const x1 = b.x1;
+        if (x1 <= x0) continue;
+        series.push({ x: x0, length: b.length });
+        series.push({ x: x1, length: b.length });
+      }
+      return series;
+    }
+
     const area = d3
       .area()
-      .x((d) => x((d.x0 + d.x1) / 2))
+      .x((d) => x(d.x))
       .y0(rowH)
-      .y1((d) => rowH - yAmp(d.length))
-      .curve(d3.curveMonotoneX);
+      .y1((d) => rowH - yAmp(d.length));
 
     const areaAbove = d3
       .area()
-      .defined((d) => (d.x0 + d.x1) / 2 >= threshold)
-      .x((d) => x((d.x0 + d.x1) / 2))
+      .x((d) => x(d.x))
       .y0(rowH)
-      .y1((d) => rowH - yAmp(d.length))
-      .curve(d3.curveMonotoneX);
+      .y1((d) => rowH - yAmp(d.length));
 
     hourBins.forEach((start) => {
       const binIndex = start / ridgeHourBin;
@@ -166,12 +169,13 @@ export function renderRidgeline(sensorId, state) {
         above: 0,
       };
       const bins = rowData.bins;
-      const rowOpacity = rowFade(rowData.total);
-      row.attr("opacity", rowOpacity);
+      const stepSeries = buildStepSeries(bins);
+      const stepSeriesAbove = buildStepSeries(bins, threshold);
+      row.attr("opacity", 1);
 
       row
         .append("path")
-        .datum(bins)
+        .datum(stepSeries)
         .attr("d", area)
         .attr("fill", "#111827")
         .attr("fill-opacity", 0.18)
@@ -181,7 +185,7 @@ export function renderRidgeline(sensorId, state) {
 
       row
         .append("path")
-        .datum(bins)
+        .datum(stepSeriesAbove)
         .attr("d", areaAbove)
         .attr("fill", "#ef4444")
         .attr("fill-opacity", 0.45)
@@ -189,9 +193,10 @@ export function renderRidgeline(sensorId, state) {
 
       if (compareBinsMap) {
         const compareBins = compareBinsMap.get(start) || { bins: [] };
+        const compareStepSeries = buildStepSeries(compareBins.bins);
         row
           .append("path")
-          .datum(compareBins.bins)
+          .datum(compareStepSeries)
           .attr("d", area)
           .attr("fill", "none")
           .attr("stroke", "#0f172a")
