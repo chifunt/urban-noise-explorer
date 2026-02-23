@@ -383,3 +383,23 @@ input[type="range"] {
   font-size: 12px;
   color: #6b7280;
 }
+
+.chart-hover-tooltip {
+  position: fixed;
+  z-index: 2000;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(29, 26, 23, 0.2);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(29, 26, 23, 0.18);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #1f2937;
+  pointer-events: none;
+  max-width: 240px;
+}
+
+.chart-hover-tooltip .title {
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}

@@ -1,10 +1,12 @@
 import { currentRidgeBin, currentThreshold, currentTimeFilter, els } from "./ui.js";
+import { hideHoverTooltip, showHoverTooltip } from "./hoverTooltip.js";
 import { getLowRiskSensorIdByContext } from "./utils.js";
 
 export function renderRidgeline(sensorId, state) {
   const container = els.ridgeline;
   if (!container) return;
   container.innerHTML = "";
+  hideHoverTooltip();
 
   const recs = state.detailsBySensor.get(sensorId) || [];
   const threshold = currentThreshold();
@@ -234,6 +236,49 @@ export function renderRidgeline(sensorId, state) {
         .attr("fill", "#6b7280")
         .attr("font-size", 10)
         .text(pct === null ? "-" : `${pct}%`);
+
+      row
+        .selectAll(null)
+        .data(bins)
+        .enter()
+        .append("rect")
+        .attr("x", (d) => x(d.x0))
+        .attr("y", 0)
+        .attr("width", (d) => Math.max(0.5, x(d.x1) - x(d.x0)))
+        .attr("height", rowH)
+        .attr("fill", "transparent")
+        .attr("stroke", "none")
+        .style("cursor", "pointer")
+        .on("mouseenter", (event, d) => {
+          d3.select(event.currentTarget)
+            .attr("fill", "rgba(30, 127, 106, 0.14)")
+            .attr("stroke", "rgba(15, 23, 42, 0.55)")
+            .attr("stroke-width", 1);
+          const binPct =
+            rowData.total > 0 ? Math.round((d.length / rowData.total) * 100) : 0;
+          showHoverTooltip(event, [
+            `${title} - ${rowLabel}`,
+            `dB bin: ${d.x0.toFixed(0)}-${d.x1.toFixed(0)}`,
+            `Samples in bin: ${d.length}`,
+            `Share of row: ${binPct}%`,
+            `>=${threshold} dB in row: ${pct === null ? "-" : `${pct}%`}`,
+          ]);
+        })
+        .on("mousemove", (event, d) => {
+          const binPct =
+            rowData.total > 0 ? Math.round((d.length / rowData.total) * 100) : 0;
+          showHoverTooltip(event, [
+            `${title} - ${rowLabel}`,
+            `dB bin: ${d.x0.toFixed(0)}-${d.x1.toFixed(0)}`,
+            `Samples in bin: ${d.length}`,
+            `Share of row: ${binPct}%`,
+            `>=${threshold} dB in row: ${pct === null ? "-" : `${pct}%`}`,
+          ]);
+        })
+        .on("mouseleave", (event) => {
+          d3.select(event.currentTarget).attr("fill", "transparent").attr("stroke", "none");
+          hideHoverTooltip();
+        });
     });
 
     return { panelTop, panelBottom: panelTop + rowAreaH };

@@ -1,4 +1,5 @@
 import { radialColors } from "./config.js";
+import { hideHoverTooltip, showHoverTooltip } from "./hoverTooltip.js";
 import { categoryFromDb } from "./utils.js";
 import { els } from "./ui.js";
 
@@ -6,6 +7,7 @@ export function renderRadial(sensorId, state) {
   const container = els.radial;
   if (!container) return;
   container.innerHTML = "";
+  hideHoverTooltip();
 
   const recs = state.detailsBySensor.get(sensorId) || [];
   if (recs.length === 0) {
@@ -91,12 +93,36 @@ export function renderRadial(sensorId, state) {
 
       const dateLabel = sampleDay ? sampleDay.date : "n/a";
       const count = sampleDay ? sampleDay.countsByHour.get(h) || 0 : 0;
-      const countLabel = sampleDay ? `${count} samples` : "no day data";
+      const hourLabel = `${String(h).padStart(2, "0")}:00`;
+      const medianLabel = v === null ? "No data" : `${v.toFixed(1)} dB`;
       segment
-        .append("title")
-        .text(
-          `${label} sample day ${dateLabel} - ${String(h).padStart(2, "0")}:00 - ${countLabel}`,
-        );
+        .on("mouseenter", (event) => {
+          d3.select(event.currentTarget)
+            .attr("stroke", "#0f172a")
+            .attr("stroke-width", 2)
+            .attr("fill-opacity", v === null ? 0.7 : 0.8);
+          showHoverTooltip(event, [
+            `${label} ring - ${hourLabel}`,
+            `Median: ${medianLabel}`,
+            `Sample day: ${dateLabel}`,
+            `Samples in hour: ${count}`,
+          ]);
+        })
+        .on("mousemove", (event) => {
+          showHoverTooltip(event, [
+            `${label} ring - ${hourLabel}`,
+            `Median: ${medianLabel}`,
+            `Sample day: ${dateLabel}`,
+            `Samples in hour: ${count}`,
+          ]);
+        })
+        .on("mouseleave", (event) => {
+          d3.select(event.currentTarget)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1)
+            .attr("fill-opacity", v === null ? 0.5 : 0.55);
+          hideHoverTooltip();
+        });
     });
   }
 
