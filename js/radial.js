@@ -31,13 +31,8 @@ export function renderRadial(sensorId, state) {
         stats.set(h, null);
         return;
       }
-      const q1 = d3.quantile(vals, 0.25);
-      const q3 = d3.quantile(vals, 0.75);
       stats.set(h, {
         median: d3.median(vals),
-        q1,
-        q3,
-        iqr: q1 !== undefined && q3 !== undefined ? q3 - q1 : 0,
       });
     });
     return stats;
@@ -79,35 +74,12 @@ export function renderRadial(sensorId, state) {
     });
   }
 
-  function drawRing(statsMap, r0, r1, label, sampleDay, bandDirection) {
-    const iqrMax =
-      d3.max(
-        Array.from(statsMap.values())
-          .filter(Boolean)
-          .map((d) => d.iqr || 0),
-      ) || 0;
-    const iqrScale = d3
-      .scaleLinear()
-      .domain([0, iqrMax || 1])
-      .range([2, 10]);
-
+  function drawRing(statsMap, r0, r1, label, sampleDay) {
     hours.forEach((h) => {
       const stats = statsMap.get(h);
       const v = stats ? stats.median : null;
       const cat = v === null ? null : categoryFromDb(v);
       const fill = cat ? colors[cat] : "#e5e7eb";
-
-      if (stats && stats.iqr && iqrMax > 0) {
-        const band = iqrScale(stats.iqr);
-        const bandStart =
-          bandDirection === "out" ? r1 : Math.max(12, r0 - band);
-        const bandEnd = bandDirection === "out" ? r1 + band : r0;
-        g.append("path")
-          .attr("d", ringSegment(h, bandStart, bandEnd))
-          .attr("fill", fill)
-          .attr("fill-opacity", 0.16)
-          .attr("stroke", "none");
-      }
 
       const segment = g
         .append("path")
@@ -128,8 +100,8 @@ export function renderRadial(sensorId, state) {
     });
   }
 
-  drawRing(statsWeekend, rMid, rOuter, "Weekend", sampleDays.weekend, "out");
-  drawRing(statsWeekday, rInner, rMid - 2, "Weekday", sampleDays.weekday, "in");
+  drawRing(statsWeekend, rMid, rOuter, "Weekend", sampleDays.weekend);
+  drawRing(statsWeekday, rInner, rMid - 2, "Weekday", sampleDays.weekday);
 
   hours
     .filter((h) => h % 3 === 0)
@@ -176,7 +148,7 @@ export function renderRadial(sensorId, state) {
 
   if (els.radialLegend) {
     els.radialLegend.textContent =
-      "Ring: inner weekday, outer weekend. Faint band shows IQR per hour.";
+      "Ring: inner weekday, outer weekend. Color shows median dB per hour.";
   }
 
   if (els.radialMeta) {
