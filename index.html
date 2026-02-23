@@ -9,7 +9,34 @@
   </head>
   <body>
     <div id="app">
-      <div id="map"></div>
+      <div id="mapPane">
+        <div id="map"></div>
+        <div id="mapLegend" class="map-legend">
+          <div class="legend-title">
+            Map risk legend (<span id="mapLegendThreshold">55</span> dB threshold)
+          </div>
+          <div class="legend-row">
+            <span class="swatch quiet"></span>
+            <span>Quiet (&lt;20%)</span>
+          </div>
+          <div class="legend-row">
+            <span class="swatch moderate"></span>
+            <span>Moderate (20-40%)</span>
+          </div>
+          <div class="legend-row">
+            <span class="swatch loud"></span>
+            <span>Loud (40-60%)</span>
+          </div>
+          <div class="legend-row">
+            <span class="swatch very_loud"></span>
+            <span>Very loud (60-80%)</span>
+          </div>
+          <div class="legend-row">
+            <span class="swatch extreme"></span>
+            <span>Extreme (80%+)</span>
+          </div>
+        </div>
+      </div>
       <div id="panel">
         <h3>Detail</h3>
         <p class="muted" style="margin: 0 0 10px">
@@ -66,14 +93,6 @@
             </div>
           </div>
 
-        </div>
-
-        <div class="legend">
-          <span class="quiet">Quiet (&lt;20%)</span>
-          <span class="moderate">Moderate (20–40%)</span>
-          <span class="loud">Loud (40–60%)</span>
-          <span class="very_loud">Very loud (60–80%)</span>
-          <span class="extreme">Extreme (≥80%)</span>
         </div>
 
         <div id="detail">
@@ -148,6 +167,27 @@
                 ></div>
               </div>
             </div>
+            <div class="legend-grid">
+              <div class="legend-title">
+                Ridgeline legend (<span id="ridgeLegendThreshold">55</span> dB threshold)
+              </div>
+              <div class="legend-row">
+                <span class="line-swatch selected"></span>
+                <span>Selected sensor distribution</span>
+              </div>
+              <div class="legend-row">
+                <span class="line-swatch exceed"></span>
+                <span>Values at/above threshold</span>
+              </div>
+              <div class="legend-row">
+                <span class="line-swatch threshold"></span>
+                <span>Threshold reference line</span>
+              </div>
+              <div class="legend-row">
+                <span class="line-swatch compare"></span>
+                <span>Comparison sensor (if enabled)</span>
+              </div>
+            </div>
             <div id="ridgeline"></div>
             <div id="ridgelineMeta" class="chartmeta muted"></div>
           </div>
@@ -163,6 +203,41 @@
                 </div>
               </div>
               <div class="small">Radial</div>
+            </div>
+            <div class="legend-grid">
+              <div class="legend-title">Daily cycle ring legend</div>
+              <div class="legend-row">
+                <span class="ring-swatch weekday"></span>
+                <span>Inner ring = weekday median</span>
+              </div>
+              <div class="legend-row">
+                <span class="ring-swatch weekend"></span>
+                <span>Outer ring = weekend median</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-quiet"></span>
+                <span>Quiet (&lt;40 dB)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-moderate"></span>
+                <span>Moderate (40-55 dB)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-loud"></span>
+                <span>Loud (55-70 dB)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-very_loud"></span>
+                <span>Very loud (70-85 dB)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-extreme"></span>
+                <span>Extreme (85+ dB)</span>
+              </div>
+              <div class="legend-row">
+                <span class="swatch radial-nodata"></span>
+                <span>No data</span>
+              </div>
             </div>
             <div id="radial"></div>
             <div id="radialLegend" class="chartmeta muted"></div>

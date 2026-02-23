@@ -10,6 +10,8 @@ export const els = {
   ridgeBinInput: document.getElementById("ridgeBin"),
   compareToggle: document.getElementById("compareToggle"),
   compareNote: document.getElementById("compareNote"),
+  mapLegendThreshold: document.getElementById("mapLegendThreshold"),
+  ridgeLegendThreshold: document.getElementById("ridgeLegendThreshold"),
   ridgeline: document.getElementById("ridgeline"),
   ridgelineMeta: document.getElementById("ridgelineMeta"),
   radial: document.getElementById("radial"),
@@ -56,8 +58,15 @@ export function describeTimeFilter(tf) {
 }
 
 export function updateControlsUI() {
+  const threshold = currentThreshold();
   if (els.thresholdPill) {
-    els.thresholdPill.textContent = `${currentThreshold()} dB`;
+    els.thresholdPill.textContent = `${threshold} dB`;
+  }
+  if (els.mapLegendThreshold) {
+    els.mapLegendThreshold.textContent = String(threshold);
+  }
+  if (els.ridgeLegendThreshold) {
+    els.ridgeLegendThreshold.textContent = String(threshold);
   }
   const tf = currentTimeFilter();
   if (els.timePill) {

@@ -1,4 +1,4 @@
-import { colors } from "./config.js";
+import { radialColors } from "./config.js";
 import { categoryFromDb } from "./utils.js";
 import { els } from "./ui.js";
 
@@ -79,7 +79,7 @@ export function renderRadial(sensorId, state) {
       const stats = statsMap.get(h);
       const v = stats ? stats.median : null;
       const cat = v === null ? null : categoryFromDb(v);
-      const fill = cat ? colors[cat] : "#e5e7eb";
+      const fill = cat ? radialColors[cat] : "#e5e7eb";
 
       const segment = g
         .append("path")
@@ -148,7 +148,7 @@ export function renderRadial(sensorId, state) {
 
   if (els.radialLegend) {
     els.radialLegend.textContent =
-      "Ring: inner weekday, outer weekend. Color shows median dB per hour.";
+      "Median-only palette for hourly dB bands. Inner ring = weekday, outer ring = weekend.";
   }
 
   if (els.radialMeta) {
