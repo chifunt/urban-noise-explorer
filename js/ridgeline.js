@@ -1,6 +1,5 @@
-import { ridgeThreshold } from "./config.js";
-import { currentRidgeBin, els } from "./ui.js";
-import { getLowRiskSensorId } from "./utils.js";
+import { currentRidgeBin, currentThreshold, currentTimeFilter, els } from "./ui.js";
+import { getLowRiskSensorIdByContext } from "./utils.js";
 
 export function renderRidgeline(sensorId, state) {
   const container = els.ridgeline;
@@ -8,9 +7,17 @@ export function renderRidgeline(sensorId, state) {
   container.innerHTML = "";
 
   const recs = state.detailsBySensor.get(sensorId) || [];
+  const threshold = currentThreshold();
+  const tf = currentTimeFilter();
   const compareEnabled = els.compareToggle && els.compareToggle.checked;
   const compareId = compareEnabled
-    ? getLowRiskSensorId(state.sensors, sensorId)
+    ? getLowRiskSensorIdByContext({
+        sensors: state.sensors,
+        detailsBySensor: state.detailsBySensor,
+        timeFilter: tf,
+        threshold,
+        excludeId: sensorId,
+      })
     : null;
   const compareRecs = compareId ? state.detailsBySensor.get(compareId) || [] : [];
   const ridgeHourBin = currentRidgeBin();
@@ -68,7 +75,7 @@ export function renderRidgeline(sensorId, state) {
       const vals = (byBin.get(idx) || []).map((d) => d.decibel_level);
       const bins = binGen(vals);
       let above = 0;
-      for (const v of vals) if (v >= ridgeThreshold) above++;
+      for (const v of vals) if (v >= threshold) above++;
       result.set(start, { bins, total: vals.length, above });
     });
     return result;
@@ -128,7 +135,7 @@ export function renderRidgeline(sensorId, state) {
       .attr("y", yOffset + 10)
       .attr("fill", "#6b7280")
       .attr("font-size", 10)
-      .text(">=55 dB");
+      .text(`>=${threshold} dB`);
 
     const panelTop = yOffset + panelPad;
     const panelG = g.append("g").attr("transform", `translate(0, ${panelTop})`);
@@ -142,7 +149,7 @@ export function renderRidgeline(sensorId, state) {
 
     const areaAbove = d3
       .area()
-      .defined((d) => (d.x0 + d.x1) / 2 >= ridgeThreshold)
+      .defined((d) => (d.x0 + d.x1) / 2 >= threshold)
       .x((d) => x((d.x0 + d.x1) / 2))
       .y0(rowH)
       .y1((d) => rowH - yAmp(d.length))
@@ -239,7 +246,7 @@ export function renderRidgeline(sensorId, state) {
   const firstPanel = panels[0];
   const lastPanel = panels[panels.length - 1];
 
-  const xThr = x(ridgeThreshold);
+  const xThr = x(threshold);
   g.append("line")
     .attr("x1", xThr)
     .attr("x2", xThr)
@@ -255,7 +262,7 @@ export function renderRidgeline(sensorId, state) {
     .attr("y", 10)
     .attr("fill", "#6b7280")
     .attr("font-size", 10)
-    .text(`${ridgeThreshold} dB`);
+    .text(`${threshold} dB`);
 
   const xAxis = d3.axisBottom(x).ticks(5).tickSizeOuter(0);
   g.append("g")
@@ -285,11 +292,15 @@ export function renderRidgeline(sensorId, state) {
     if (compareEnabled && compareId && compareRecs.length) {
       const compareSensor = state.sensors.find((s) => s.sensor_id === compareId);
       const avg = compareSensor ? compareSensor.avg_db.toFixed(1) : "n/a";
-      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison: Sensor ${compareId} (avg ${avg} dB) shown as dashed outline.`;
+      els.ridgelineMeta.textContent =
+        `${binLabel} ${modeLabel} Threshold ${threshold} dB. ` +
+        `Comparison: Sensor ${compareId} (avg ${avg} dB) shown as dashed outline.`;
     } else if (compareEnabled) {
-      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison unavailable.`;
+      els.ridgelineMeta.textContent =
+        `${binLabel} ${modeLabel} Threshold ${threshold} dB. Comparison unavailable.`;
     } else {
-      els.ridgelineMeta.textContent = `${binLabel} ${modeLabel} Comparison off.`;
+      els.ridgelineMeta.textContent =
+        `${binLabel} ${modeLabel} Threshold ${threshold} dB. Comparison off.`;
     }
   }
 }

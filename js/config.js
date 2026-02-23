@@ -5,5 +5,3 @@ export const colors = {
   very_loud: "#fb7185",
   extreme: "#7f1d1d",
 };
-
-export const ridgeThreshold = 55;

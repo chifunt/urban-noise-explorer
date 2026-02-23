@@ -45,3 +45,38 @@ export function getLowRiskSensorId(sensors, excludeId) {
   }
   return sorted[0].sensor_id;
 }
+
+export function getLowRiskSensorIdByContext({
+  sensors,
+  detailsBySensor,
+  timeFilter,
+  threshold,
+  excludeId,
+}) {
+  if (!sensors || sensors.length === 0 || !detailsBySensor) return null;
+
+  const ranked = [];
+  for (const s of sensors) {
+    if (s.sensor_id === excludeId) continue;
+    const recs = filterRecords(detailsBySensor.get(s.sensor_id) || [], timeFilter);
+    const pct = computeExceedPct(recs, threshold);
+    if (pct === null) continue;
+    ranked.push({
+      sensor_id: s.sensor_id,
+      pct,
+      avg_db: Number.isFinite(s.avg_db) ? s.avg_db : Number.POSITIVE_INFINITY,
+    });
+  }
+
+  if (ranked.length === 0) {
+    return getLowRiskSensorId(sensors, excludeId);
+  }
+
+  ranked.sort((a, b) => {
+    if (a.pct !== b.pct) return a.pct - b.pct;
+    if (a.avg_db !== b.avg_db) return a.avg_db - b.avg_db;
+    return a.sensor_id - b.sensor_id;
+  });
+
+  return ranked[0].sensor_id;
+}

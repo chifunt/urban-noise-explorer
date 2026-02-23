@@ -15,6 +15,14 @@ const state = {
   selectedSensorId: null,
 };
 
+function bindUIEvent(el, eventName, handler) {
+  if (!el) {
+    console.warn(`Missing UI element for ${eventName} listener.`);
+    return;
+  }
+  el.addEventListener(eventName, handler);
+}
+
 function refreshMapAndDetail() {
   updateMapColors(state);
   if (state.selectedSensorId !== null) {
@@ -46,31 +54,31 @@ loadData()
     console.error(err);
   });
 
-els.thresholdSel.addEventListener("change", () => {
+bindUIEvent(els.thresholdSel, "change", () => {
   updateControlsUI();
   refreshMapAndDetail();
 });
-els.timeModeSel.addEventListener("change", () => {
+bindUIEvent(els.timeModeSel, "change", () => {
   updateControlsUI();
   refreshMapAndDetail();
 });
-els.hourSlider.addEventListener("input", () => {
+bindUIEvent(els.hourSlider, "input", () => {
   updateControlsUI();
-  if (els.timeModeSel.value === "hour") {
+  if (els.timeModeSel && els.timeModeSel.value === "hour") {
     refreshMapAndDetail();
   }
 });
-els.ridgeModeSel.addEventListener("change", () => {
+bindUIEvent(els.ridgeModeSel, "change", () => {
   if (state.selectedSensorId !== null) {
     renderRidgeline(state.selectedSensorId, state);
   }
 });
-els.ridgeBinInput.addEventListener("change", () => {
+bindUIEvent(els.ridgeBinInput, "change", () => {
   if (state.selectedSensorId !== null) {
     renderRidgeline(state.selectedSensorId, state);
   }
 });
-els.compareToggle.addEventListener("change", () => {
+bindUIEvent(els.compareToggle, "change", () => {
   if (state.selectedSensorId !== null) {
     renderDetail(state.selectedSensorId, state, renderRidgeline, renderRadial);
   }

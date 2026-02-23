@@ -19,11 +19,13 @@ export const els = {
 };
 
 export function currentThreshold() {
-  return Number(els.thresholdSel.value);
+  if (!els.thresholdSel) return 55;
+  const threshold = Number(els.thresholdSel.value);
+  return Number.isFinite(threshold) ? threshold : 55;
 }
 
 export function currentTimeFilter() {
-  const mode = els.timeModeSel.value;
+  const mode = els.timeModeSel ? els.timeModeSel.value : "all";
   if (mode === "all") return { mode };
   if (mode === "day") {
     return {
@@ -36,7 +38,10 @@ export function currentTimeFilter() {
   if (mode === "night") {
     return { mode, hours: new Set([22, 23, 0, 1, 2, 3, 4, 5, 6]) };
   }
-  if (mode === "hour") return { mode, hour: Number(els.hourSlider.value) };
+  if (mode === "hour") {
+    const hour = els.hourSlider ? Number(els.hourSlider.value) : 22;
+    return { mode, hour: Number.isFinite(hour) ? hour : 22 };
+  }
   return { mode: "all" };
 }
 
@@ -51,11 +56,19 @@ export function describeTimeFilter(tf) {
 }
 
 export function updateControlsUI() {
-  els.thresholdPill.textContent = `${currentThreshold()} dB`;
+  if (els.thresholdPill) {
+    els.thresholdPill.textContent = `${currentThreshold()} dB`;
+  }
   const tf = currentTimeFilter();
-  els.timePill.textContent = describeTimeFilter(tf);
-  els.hourRow.style.display = tf.mode === "hour" ? "block" : "none";
-  els.hourLabel.textContent = els.hourSlider.value;
+  if (els.timePill) {
+    els.timePill.textContent = describeTimeFilter(tf);
+  }
+  if (els.hourRow) {
+    els.hourRow.style.display = tf.mode === "hour" ? "block" : "none";
+  }
+  if (els.hourLabel) {
+    els.hourLabel.textContent = els.hourSlider ? els.hourSlider.value : "22";
+  }
 }
 
 export function currentRidgeBin() {

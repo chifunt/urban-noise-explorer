@@ -2,20 +2,31 @@ import {
   categoryFromPct,
   computeExceedPct,
   filterRecords,
-  getLowRiskSensorId,
+  getLowRiskSensorIdByContext,
 } from "./utils.js";
 import { currentThreshold, currentTimeFilter, els } from "./ui.js";
 
-function updateCompareNote(sensorId, state) {
+function updateCompareNote(sensorId, state, threshold, tf) {
   if (!els.compareNote) return;
-  const compareId = getLowRiskSensorId(state.sensors, sensorId);
+  const compareId = getLowRiskSensorIdByContext({
+    sensors: state.sensors,
+    detailsBySensor: state.detailsBySensor,
+    timeFilter: tf,
+    threshold,
+    excludeId: sensorId,
+  });
   if (!compareId) {
     els.compareNote.textContent = "No comparison sensor available.";
     return;
   }
   const compareSensor = state.sensors.find((s) => s.sensor_id === compareId);
   const avg = compareSensor ? compareSensor.avg_db.toFixed(1) : "n/a";
-  els.compareNote.textContent = `Low-risk sensor: ${compareId} (avg ${avg} dB).`;
+  const compareRecs = filterRecords(state.detailsBySensor.get(compareId) || [], tf);
+  const comparePct = computeExceedPct(compareRecs, threshold);
+  const pctLabel = comparePct === null ? "n/a" : `${comparePct.toFixed(0)}%`;
+  els.compareNote.textContent =
+    `Low-risk sensor in current filter: ${compareId} ` +
+    `(>=${threshold} dB: ${pctLabel}, avg ${avg} dB).`;
 }
 
 export function renderDetail(sensorId, state, renderRidgeline, renderRadial) {
@@ -72,7 +83,7 @@ export function renderDetail(sensorId, state, renderRidgeline, renderRadial) {
        Map colors respond to the filters above. Ridgeline and radial summaries show the selected sensor's temporal patterns.
      </p>`;
 
-  updateCompareNote(sensorId, state);
+  updateCompareNote(sensorId, state, threshold, tf);
   renderRidgeline(sensorId, state);
   renderRadial(sensorId, state);
 }

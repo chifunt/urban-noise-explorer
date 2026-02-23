@@ -53,3 +53,14 @@ To (re)download Leaflet and D3 into local vendor folders:
 
 - This is a static client-only prototype. No build step is required.
 - Data files are loaded via fetch, so a local server is required.
+
+## Validation checks
+
+Run lightweight local checks:
+
+```
+for f in js/*.js; do node --check "$f"; done
+node scripts/smoke-check.mjs
+```
+
+CI runs the same checks on push and pull requests via GitHub Actions.
